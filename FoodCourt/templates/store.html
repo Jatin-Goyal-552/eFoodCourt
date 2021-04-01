@@ -1,0 +1,43 @@
+  
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<!-- <div class="modal fade" id="addcart/food" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Add an item for tracking</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<form action="" method="POST" autocomplete="off">
+					{% csrf_token %}
+					<div class="form-field">
+						<input class="form-control" type="text" name="address" placeholder="Address..">
+					</div>					<button type="submit" class="btn btn-primary mt-2">Save</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div> -->
+
+	<div class="row">
+		{% for food in menu %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{food.5}}">
+			<div class="box-element product">
+				<h6><strong>{{food.1}}</strong></h6>
+				<hr>
+				<h6>{{food.2}}</h6>
+				<h6>{{food.4}}/5</h6>
+				<a href="{% url 'addcart' food.0 %}"><button data-product='food.0' data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button></a>
+				
+				<!-- <a class="btn btn-outline-success" href="#">View</a> -->
+				<h4 style="display: inline-block; float: right"><strong>Rs.{{food.3}}</strong></h4>
+
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+{% endblock content %}

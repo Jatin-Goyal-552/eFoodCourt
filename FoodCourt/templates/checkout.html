@@ -1,0 +1,74 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+     <div class="row">
+		<div class="col-lg-6">
+			<div class="box-element" id="form-wrapper">
+				<form id="form" action="#" method="POST">
+                    {% csrf_token %}
+
+					<div id="shipping-info">
+						<hr>
+						<p>Delivery Location:</p>
+						<hr>
+						<div class="form-field">
+							<input class="form-control" type="text" name="address" placeholder="Address..">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="city" placeholder="City..">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="state" placeholder="State..">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+						</div>
+					</div>
+
+					<hr>
+					<div id="shipping-info">
+						<hr>
+						<p>Payment methods:</p>
+						<hr>
+						<div class="form-field">
+							<input class="form-control" type="text" name="card_no" placeholder="Card number">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="cvv" placeholder="CVV">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="expirydate" placeholder="Expiry Date Of Card">
+						</div>
+					</div>
+				</hr>
+				<hr>
+					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Pay">
+				</form>
+			</div>
+		
+				
+			<br>
+		</div>
+
+		<div class="col-lg-6">
+			<div class="box-element">
+				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+				<hr>
+				<h3>Order Summary</h3>
+				<hr>
+				{% for food in cart %}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{food.0.image}}"></div>
+					<div style="flex:2"><p>{{food.0.food_name}}</p></div>
+					<div style="flex:1"><p>Rs.{{food.0.price|floatformat:2}}</p></div>
+					<div style="flex:1"><p>x{{food.1}}</p></div>
+				</div>
+				{% endfor %}
+				<h5>Items:   {{number}}</h5>
+				<h5>Total:   Rs. {{total|floatformat:2}}</h5>
+			</div>
+		</div>
+	</div>
+
+
+{% endblock content %}

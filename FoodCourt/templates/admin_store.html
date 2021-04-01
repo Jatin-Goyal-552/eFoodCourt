@@ -1,0 +1,23 @@
+  
+{% extends 'admin_main.html' %}
+{% load static %}
+{% block content %}
+	<div class="row">
+		{% for food in menu %}
+		<div class="col-lg-4">
+			<img class="thumbnail" src="{{food.5}}">
+			<div class="box-element product">
+				<h6><strong>{{food.1}}</strong></h6>
+				<hr>
+				<h6>{{food.2}}</h6>
+				<h6>{{food.4}}/5</h6>
+				<a href="#"><button data-product='food.0' data-action="add" class="btn btn-outline-secondary add-btn update-cart" ></button></a>
+				
+				<!-- <a class="btn btn-outline-success" href="#">View</a> -->
+				<h4 style="display: inline-block; float: right"><strong>Rs.{{food.3}}</strong></h4>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+{% endblock content %}

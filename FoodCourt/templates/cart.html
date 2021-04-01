@@ -1,0 +1,57 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="box-element">
+
+				<a  class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Continue Grabbing More Food</a>
+
+				<br>
+				<br>
+				<table class="table">
+					<tr>
+						<th><h5>Items : <strong>{{number}}</strong></h5></th>
+						<th><h5>Total : <strong> Rs. {{total|floatformat:2}}</strong></h5></th>
+						<th>
+							<a  style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout'%}">Make Payment</a>
+						</th>
+					</tr>
+				</table>
+
+			</div>
+
+			<br>
+			<div class="box-element">
+				<div class="cart-row">
+					<div style="flex:2"></div>
+					<div style="flex:2"><strong>Item</strong></div>
+					<div style="flex:1"><strong>Price</strong></div>
+					<div style="flex:1"><strong>Quantity</strong></div>
+					<div style="flex:1"><strong>Total</strong></div>
+					<div style="flex:1"><strong>Remove</strong></div>
+				</div>
+				{% for food in cart %}
+				<div class="cart-row">
+					<div style="flex:2"><img class="row-image" src="{{food.0.image}}"></div>
+					<div style="flex:2"><p>{{food.0.food_name}}</p></div>
+					<div style="flex:1"><p>Rs.{{food.0.price|floatformat:2}}</p></div>
+					
+					<div style="flex:1">
+						<p class="quantity">{{food.1}}</p>
+						<!-- <div class="quantity">
+							<a<img data-product="{{item.product.id}}" data-action="add" class="chg-quantity update-cart" src="{% static  'images/arrow-up.png' %}">
+					
+							<img data-product="{{item.product.id}}" data-action="remove" class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
+						</div> -->
+					</div>
+					<div style="flex:1"><p>Rs.{{food.2}}</p></div>
+					<div style="flex:1"><a  style=" margin:5px;" class="btn btn-danger" href="{% url 'deletefood' food.0.fid %}">Remove item</a></div>
+
+				</div>
+				{% endfor %}
+
+			</div>
+		</div>
+	</div>
+{% endblock content %}

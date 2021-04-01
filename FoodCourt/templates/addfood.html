@@ -1,0 +1,25 @@
+{% extends 'admin_main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container" >
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in form %}
+      <div class="row">
+        <label for="{{ field.name}}">{{ field.label}}</label>{{ field }}
+     </div>
+     <br>
+{% endfor %}
+          <!-- {{form.errors}} -->
+          <div id="success"></div>
+          <button type="submit" class="btn btn-primary btn-success">Add Food</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock content %}
