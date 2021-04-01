@@ -104,7 +104,7 @@ def home(request):
     for row in c.fetchall():
         lst.append(row)
     c=connection.cursor()  
-    c.execute("SELECT efoodcourt.foodcourt_customer_order.oid FROM efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete =0 ;")
+    c.execute("SELECT efoodcourt.foodcourt_customer_order.oid FROM efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.ordered =0 ;")
     i=0
     for row in c.fetchall():
         print("row",row)
@@ -129,7 +129,7 @@ def cart(request):
     global lst2
     # customer_id=1
     c=connection.cursor() 
-    c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=0);")
+    c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.ordered=0);")
     lst=[]
     quantity=[]
     for row in c.fetchall():
@@ -188,7 +188,7 @@ def checkout(request):
         od=order_delivery(cid_id=customer_id,oid_id=order_id,address=address,city=city,state=state,zipcode=zipcode,card_no=card_no,cvv=cvv,expirydate=expirydate)
         od.save()
         c=connection.cursor() 
-        c.execute("update efoodcourt.foodcourt_customer_order set efoodcourt.foodcourt_customer_order.complete= 1 where efoodcourt.foodcourt_customer_order.oid="+str(order_id)+" and efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+";")
+        c.execute("update efoodcourt.foodcourt_customer_order set efoodcourt.foodcourt_customer_order.ordered= 1 where efoodcourt.foodcourt_customer_order.oid="+str(order_id)+" and efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+";")
         return render(request, "finish.html")
     context={
         'cart':lst2,
@@ -300,6 +300,61 @@ def myorders(request):
     except:
         return HttpResponse("<h1>You do not have any previous order.......Please order something</h1>")
 
+def pendingorders(request):
+    try:
+        global order_id
+        global customer_id
+        c=connection.cursor() 
+        c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=0);")
+        final=[]
+        lst=[]
+        # quantity=[]
+        orderno=[]
+        for row in c.fetchall():
+            lst.append(row[0])
+            # quantity.append(row[1])
+            orderno.append(row[2])
+        print("lst",lst)
+        print('order',orderno)
+        # print(quantity)
+        orderno= list(set(orderno))
+        for i in orderno:
+            c=connection.cursor() 
+            c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
+            ind=[]
+            quantity=[]
+            for row in c.fetchall():
+                ind.append(row[0])
+                quantity.append(row[1])
+            # print(lst2)
+            lst2=[]
+            j=0
+            total=0
+            number=0
+
+            for i in ind:
+                cart=Food.object.filter(fid=i)
+                amount=cart[0].price*quantity[j]
+                lst2.append([cart[0],quantity[j],amount])
+                total=total+amount
+                number+=quantity[j]
+                j=j+1
+            print("fewf")
+            print("lst2",lst2)
+            print("Total amount",total)
+            final.append([lst2,total,number])
+        print("final",final)
+        context={
+            'orders':final,
+            'quantity':quantity,
+            'total':total,
+            'number':number
+            }
+
+        return render(request,'pendingorders.html',context)
+    except:
+        return HttpResponse("<h1>You do not have any pending order.......Please order something</h1>")
+
 def add_food(request):
     if request.method=='POST':
         form=AddFoodForm(request.POST,request.FILES)
@@ -384,3 +439,122 @@ def allorders(request):
             }
 
     return render(request,'allorders.html',context)
+
+def allpendingorders(request):
+    try:
+        global admin_id
+        c=connection.cursor() 
+        c.execute("select efoodcourt.foodcourt_customer_order.oid,efoodcourt.foodcourt_customer_order.cid_id from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.complete=0 and efoodcourt.foodcourt_customer_order.ordered!=0 ;")
+        ono=[]
+        cno=[]
+        final=[]
+        for row in c.fetchall():
+            ono.append(row[0])
+            cno.append(row[1])
+        print("ono",ono)
+        c=connection.cursor()
+        k=0
+        z=0
+        for i in ono:
+            c=connection.cursor() 
+            c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
+            ind=[]
+            quantity=[]
+            for row in c.fetchall():
+                ind.append(row[0])
+                quantity.append(row[1])
+            lst2=[]
+            j=0
+            total=0
+            number=0
+            # cname=[]
+            c=connection.cursor() 
+            c.execute("select efoodcourt.foodcourt_customer.user_name from efoodcourt.foodcourt_customer where efoodcourt.foodcourt_customer.cid="+str(cno[k])+ " ;")
+            k=k+1
+            for row in c.fetchall():
+                customer_name =row[0]
+            for i in ind:
+                cart=Food.object.filter(fid=i)
+                amount=cart[0].price*quantity[j]
+                lst2.append([cart[0],quantity[j],amount])
+                total=total+amount
+                number+=quantity[j]
+                j=j+1
+            print("fewf")
+            print("lst2",lst2)
+            print("Total amount",total)
+
+            final.append([lst2,total,number,customer_name,ono[z]])
+            z=z+1
+        print("final",final)
+        context={
+                'orders':final
+                # 'quantity':quantity,
+                # 'total':total,
+                # 'number':number
+                }
+
+        return render(request,'allpendingorders.html',context)
+    except:
+        # print(e)
+        return HttpResponse("<h1>no pending orders</h1>")
+
+def delivered(request,oid):
+    
+    c=connection.cursor() 
+    c.execute("update efoodcourt.foodcourt_customer_order set efoodcourt.foodcourt_customer_order.complete= 1 where efoodcourt.foodcourt_customer_order.oid="+str(oid)+";")
+    return redirect('allpendingorders')
+
+# def allpendingorders(request):
+#     c=connection.cursor() 
+#     c.execute("select efoodcourt.foodcourt_customer_order.oid,efoodcourt.foodcourt_customer_order.cid_id from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.complete=0 and efoodcourt.foodcourt_customer_order.ordered!=0 ;")
+#     ono=[]
+#     cno=[]
+#     final=[]
+#     for row in c.fetchall():
+#         ono.append(row[0])
+#         cno.append(row[1])
+#     print("ono",ono)
+#     c=connection.cursor()
+#     k=0
+#     z=0
+#     for i in ono:
+#         c=connection.cursor() 
+#         c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
+#         ind=[]
+#         quantity=[]
+#         for row in c.fetchall():
+#             ind.append(row[0])
+#             quantity.append(row[1])
+#         lst2=[]
+#         j=0
+#         total=0
+#         number=0
+#             # cname=[]
+#         c=connection.cursor() 
+#         c.execute("select efoodcourt.foodcourt_customer.user_name from efoodcourt.foodcourt_customer where efoodcourt.foodcourt_customer.cid="+str(cno[k])+ " ;")
+#         k=k+1
+#         for row in c.fetchall():
+#             customer_name =row[0]
+#         for i in ind:
+#             cart=Food.object.filter(fid=i)
+#             amount=cart[0].price*quantity[j]
+#             lst2.append([cart[0],quantity[j],amount])
+#             total=total+amount
+#             number+=quantity[j]
+#             j=j+1
+#         print("fewf")
+#         print("lst2",lst2)
+#         print("Total amount",total)
+
+#         final.append([lst2,total,number,customer_name,ono[z]])
+#         z=z+1
+#     print("final",final)
+#     context={
+#             'orders':final
+#                 # 'quantity':quantity,
+#                 # 'total':total,
+#                 # 'number':number
+#                 }
+
+#     return render(request,'allpendingorders.html',context)

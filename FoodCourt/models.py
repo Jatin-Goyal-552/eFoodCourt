@@ -23,6 +23,8 @@ class customer_order(models.Model):
     cid=models.ForeignKey(Customer,on_delete=models.DO_NOTHING)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
+    ordered = models.BooleanField(default=False)
+
     # transaction_id = models.CharField(max_length=100, null=True)
     order_amount= models.FloatField(null=True)
     object=models.Manager()
