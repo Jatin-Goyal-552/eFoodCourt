@@ -264,6 +264,7 @@ def myorders(request):
         # print(quantity)
         orderno= list(set(orderno))
         for i in orderno:
+            order_no=i
             c=connection.cursor() 
             c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
             ind=[]
@@ -287,17 +288,20 @@ def myorders(request):
             print("fewf")
             print("lst2",lst2)
             print("Total amount",total)
-            final.append([lst2,total,number])
+            final.append([lst2,total,number,order_no])
+            # print("i",i)
         print("final",final)
         context={
             'orders':final,
             'quantity':quantity,
             'total':total,
-            'number':number
+            'number':number,
+
             }
 
         return render(request,'myorder.html',context)
-    except:
+    except Exception as e:
+        print(e)
         return HttpResponse("<h1>You do not have any previous order.......Please order something</h1>")
 
 def pendingorders(request):
@@ -319,6 +323,7 @@ def pendingorders(request):
         # print(quantity)
         orderno= list(set(orderno))
         for i in orderno:
+            order_no=i
             c=connection.cursor() 
             c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
             ind=[]
@@ -342,7 +347,7 @@ def pendingorders(request):
             print("fewf")
             print("lst2",lst2)
             print("Total amount",total)
-            final.append([lst2,total,number])
+            final.append([lst2,total,number,order_no])
         print("final",final)
         context={
             'orders':final,
@@ -399,6 +404,7 @@ def allorders(request):
     c=connection.cursor()
     k=0
     for i in ono:
+        order_no=i
         c=connection.cursor() 
         c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
         ind=[]
@@ -428,7 +434,7 @@ def allorders(request):
         print("Total amount",total)
 
         # k=0
-        final.append([lst2,total,number,customer_name])
+        final.append([lst2,total,number,customer_name,order_no])
         # k=k+1
     print("final",final)
     context={
@@ -456,6 +462,7 @@ def allpendingorders(request):
         k=0
         z=0
         for i in ono:
+            order_no=i
             c=connection.cursor() 
             c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
             ind=[]
@@ -484,7 +491,7 @@ def allpendingorders(request):
             print("lst2",lst2)
             print("Total amount",total)
 
-            final.append([lst2,total,number,customer_name,ono[z]])
+            final.append([lst2,total,number,customer_name,ono[z],order_no])
             z=z+1
         print("final",final)
         context={
@@ -558,3 +565,16 @@ def delivered(request,oid):
 #                 }
 
 #     return render(request,'allpendingorders.html',context)
+
+def viewdetails(request,oid):
+    print("oid",oid)
+    lst=[]
+    c=connection.cursor() 
+    c.execute("Select * from  efoodcourt.foodcourt_order_delivery where efoodcourt.foodcourt_order_delivery.oid_id= "+str(oid)+";")
+    for row in c.fetchall():
+            print("row",row)
+            lst.append(row)
+    context={
+        'order_detail':lst
+    }
+    return render(request,'orderdetails.html',context)

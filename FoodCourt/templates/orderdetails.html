@@ -1,0 +1,14 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<!-- <p>{{order_detail}}</p> -->
+<div style="margin:100px">
+<h1 >Delivered at :-</h1>
+<p>Address : {{order_detail.0.1}}</p>
+<p>City : {{order_detail.0.2}}</p>
+<p>State : {{order_detail.0.3}}</p>
+<p>ZipCode : {{order_detail.0.4}}</p>
+<h1>Payment Details :-</h1>
+<p>Card No. : {{order_detail.0.7}}</p>
+</div>
+{% endblock content %}

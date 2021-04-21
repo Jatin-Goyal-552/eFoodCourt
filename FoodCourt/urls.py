@@ -20,5 +20,5 @@ urlpatterns = [
 	path('allorders/',views.allorders,name="allorders"),
 	path('allpendingorders/',views.allpendingorders,name="allpendingorders"),
 	path('delivered/<oid>',views.delivered,name="delivered"),
-
+	path('viewdetails/<oid>',views.viewdetails,name="viewdetails"),
 ]

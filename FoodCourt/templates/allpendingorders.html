@@ -47,7 +47,10 @@
              
             </div>
             <div>
-                <a href="{% url 'delivered' order.4 %}" class="btn btn-success" style="margin-left: 85%;">Delivered</a>
+                
+                <a href="{% url 'viewdetails' order.5 %}" class="btn btn-success" style="margin-left: 70%;">View Details</a>
+                <a href="{% url 'delivered' order.4 %}" class="btn btn-success" style="margin-left: 85%; margin-top: -65px;">Delivered</a>
+               
             </div>
         </div>
 {% endfor %}
