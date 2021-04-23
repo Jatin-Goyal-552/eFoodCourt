@@ -5,7 +5,8 @@
 		<div class="col-lg-12">
 			<div class="box-element">
 
-				<a  class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Back to menu</a>
+				<a  style="margin-bottom: 10px;" class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Back to menu</a>				<span>Your All Pending Orders</span>
+
             </div>
 
                 {% for order in orders %}
@@ -52,6 +53,16 @@
 
 			</div>
         </div>
-
+		<style>
+			span{
+				margin-left: 225px;
+			font-size: 32px;
+			color: #e44141;
+			font-weight: 100px;
+			text-shadow: 10px;
+			text-shadow: -1px -1px #2d4220;
+			font-weight: bold;
+			}
+		</style>
 	
 {% endblock content %}

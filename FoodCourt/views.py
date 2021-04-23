@@ -386,9 +386,9 @@ def add_food(request):
         form=AddFoodForm(request.POST)
         return render(request,'addfood.html',{"form": form})
 
-def editfood(request,fid):
-    food_to_edit=Food.object.get(fid=fid)
-    pass
+# def editfood(request,fid):
+#     food_to_edit=Food.object.get(fid=fid)
+#     pass
 
 def allorders(request):
     global admin_id
