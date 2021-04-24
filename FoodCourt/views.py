@@ -6,6 +6,7 @@ from django.db import connection
 from django.shortcuts import redirect
 from django.core.files.storage import FileSystemStorage
 from FoodCourt.forms import AddFoodForm
+import time
 
 customer_id=None
 order_id=None
@@ -77,19 +78,6 @@ def admin_home(request):
     lst=[]
     for row in c.fetchall():
         lst.append(row)
-    # c=connection.cursor()  
-    # c.execute("SELECT efoodcourt.foodcourt_customer_order.oid FROM efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete =0 ;")
-    # i=0
-    # for row in c.fetchall():
-    #     print("row",row)
-    #     order_id=row[0]
-    #     i+=1
-    # if i==0:
-    #     co=customer_order(cid_id=customer_id,complete=0)
-    #     co.save()
-    #     order_id=co.oid
-    #     print("order_od",order_id)
-    # if order_id
     context={
         'menu':lst,
         }
@@ -115,7 +103,6 @@ def home(request):
         co.save()
         order_id=co.oid
         print("order_od",order_id)
-    # if order_id
     context={
         'menu':lst,
         }
@@ -137,12 +124,6 @@ def cart(request):
         quantity.append(row[1])
     print(lst)
     print(quantity)
-    # c=connection.cursor() 
-    # c.execute("SELECT *  FROM efoodcourt.foodcourt_food where efoodcourt.foodcourt_food.oid = lst[0]);")
-    # lst2=[]
-    # for row in c.fetchall():
-    #     lst.append(row)
-    # print(lst2)
     lst2=[]
     j=0
     total=0
@@ -198,36 +179,46 @@ def checkout(request):
     }
     return render(request,'checkout.html',context)
 
-def test_cart(request):
-    global customer_id
-    c=connection.cursor() 
-    c.execute("SELECT efoodcourt.foodcourt_food_order.fid FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id ="+str(customer_id)+");")
-    lst=[]
-    for row in c.fetchall():
-        lst.append(row[0])
-        print(row)
-    lst2=[]
-    for i in lst:
-        cart=Food.object.filter(fid=i)
-        print(cart[0].food_name)
-        lst2.append(cart)
-    print(lst2)
-    print(lst2[0][0].fid)
-    return HttpResponse("egrg")
+# def test_cart(request):
+#     global customer_id
+#     c=connection.cursor() 
+#     c.execute("SELECT efoodcourt.foodcourt_food_order.fid FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id ="+str(customer_id)+");")
+#     lst=[]
+#     for row in c.fetchall():
+#         lst.append(row[0])
+#         print(row)
+#     lst2=[]
+#     for i in lst:
+#         cart=Food.object.filter(fid=i)
+#         print(cart[0].food_name)
+#         lst2.append(cart)
+#     print(lst2)
+#     print(lst2[0][0].fid)
+#     return HttpResponse("egrg")
+
+# def addcart(request,fid):
+#     # customer_order=customer_order(oid=1,complete=0,email=email,phone=phone)
+#     # user.save()
+#     global customer_id
+#     global order_id
+#     # customer_id=1
+#     food=Food.object.filter(fid=fid)
+#     print(food)
+#     print(customer_id)
+#     cust_od=customer_order.object.filter(oid=order_id,cid=customer_id)
+#     print(cust_od)
+#     food_cart=food_order(fid=food[0],quantity=1,oid=cust_od[0])
+#     food_cart.save()
+#     return redirect('cart')
 
 def addcart(request,fid):
-    # customer_order=customer_order(oid=1,complete=0,email=email,phone=phone)
-    # user.save()
     global customer_id
     global order_id
-    # customer_id=1
-    food=Food.object.filter(fid=fid)
-    print(food)
-    print(customer_id)
-    cust_od=customer_order.object.filter(oid=order_id,cid=customer_id)
-    print(cust_od)
-    food_cart=food_order(fid=food[0],quantity=1,oid=cust_od[0])
-    food_cart.save()
+    c=connection.cursor() 
+    sql = "INSERT INTO efoodcourt.foodcourt_food_order (quantity, fid_id,oid_id) VALUES (%s, %s,%s)"
+    val = (1, fid,order_id)
+    c.execute(sql, val)
+    connection.commit()
     return redirect('cart')
 
 def deletefood(request,fid):
@@ -372,23 +363,33 @@ def add_food(request):
             fs=FileSystemStorage()
             filename=fs.save(image.name,image)
             image_pic_url=fs.url(filename)
-            food=Food(food_name=food_name,description=description,price=price,rating=rating,image=image_pic_url)
-            food.save()
+            # food=Food(food_name=food_name,description=description,price=price,rating=rating,image=image_pic_url)
+            # food.save()
+            c=connection.cursor() 
+            sql = "INSERT INTO efoodcourt.foodcourt_food (food_name, description,price,rating,image) VALUES (%s, %s,%s,%s,%s)"
+            val = (food_name, description, price, rating, image_pic_url)
+            c.execute(sql, val)
+            connection.commit()
             global admin_id
             print("admin__id",admin_id)
+            # time.sleep(20)
             food=Food.object.filter(food_name=food_name)
-            admin=Admin.object.filter(aid=admin_id)
+            # c=connection.cursor() 
+            # c.execute("select efoodcourt.foodcourt_food.fid from efoodcourt.foodcourt_food where efoodcourt.foodcourt_food.food_name= "+str(food_name)+" ;")
+            # admin=Admin.object.filter(aid=admin_id)
+            # for row in c.fetchall():
+            #     food=row[0]
             print("food",food[0].fid)
-            add=addfood(food_id=food[0],ad_id=admin[0])
-            add.save()
+            fid=food[0].fid
+            c=connection.cursor() 
+            sql = "INSERT INTO efoodcourt.foodcourt_addfood (ad_id_id,food_id_id) VALUES (%s, %s)"
+            val = (admin_id,fid)
+            c.execute(sql, val)
+            connection.commit()
             return redirect('admin_home')
     else:
         form=AddFoodForm(request.POST)
         return render(request,'addfood.html',{"form": form})
-
-# def editfood(request,fid):
-#     food_to_edit=Food.object.get(fid=fid)
-#     pass
 
 def allorders(request):
     global admin_id
@@ -512,69 +513,22 @@ def delivered(request,oid):
     c.execute("update efoodcourt.foodcourt_customer_order set efoodcourt.foodcourt_customer_order.complete= 1 where efoodcourt.foodcourt_customer_order.oid="+str(oid)+";")
     return redirect('allpendingorders')
 
-# def allpendingorders(request):
-#     c=connection.cursor() 
-#     c.execute("select efoodcourt.foodcourt_customer_order.oid,efoodcourt.foodcourt_customer_order.cid_id from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.complete=0 and efoodcourt.foodcourt_customer_order.ordered!=0 ;")
-#     ono=[]
-#     cno=[]
-#     final=[]
-#     for row in c.fetchall():
-#         ono.append(row[0])
-#         cno.append(row[1])
-#     print("ono",ono)
-#     c=connection.cursor()
-#     k=0
-#     z=0
-#     for i in ono:
-#         c=connection.cursor() 
-#         c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id ="+str(i)+" ;")
-#         ind=[]
-#         quantity=[]
-#         for row in c.fetchall():
-#             ind.append(row[0])
-#             quantity.append(row[1])
-#         lst2=[]
-#         j=0
-#         total=0
-#         number=0
-#             # cname=[]
-#         c=connection.cursor() 
-#         c.execute("select efoodcourt.foodcourt_customer.user_name from efoodcourt.foodcourt_customer where efoodcourt.foodcourt_customer.cid="+str(cno[k])+ " ;")
-#         k=k+1
-#         for row in c.fetchall():
-#             customer_name =row[0]
-#         for i in ind:
-#             cart=Food.object.filter(fid=i)
-#             amount=cart[0].price*quantity[j]
-#             lst2.append([cart[0],quantity[j],amount])
-#             total=total+amount
-#             number+=quantity[j]
-#             j=j+1
-#         print("fewf")
-#         print("lst2",lst2)
-#         print("Total amount",total)
-
-#         final.append([lst2,total,number,customer_name,ono[z]])
-#         z=z+1
-#     print("final",final)
-#     context={
-#             'orders':final
-#                 # 'quantity':quantity,
-#                 # 'total':total,
-#                 # 'number':number
-#                 }
-
-#     return render(request,'allpendingorders.html',context)
-
 def viewdetails(request,oid):
     print("oid",oid)
-    lst=[]
+    lst1=[]
+    lst2=[]
     c=connection.cursor() 
     c.execute("Select * from  efoodcourt.foodcourt_order_delivery where efoodcourt.foodcourt_order_delivery.oid_id= "+str(oid)+";")
     for row in c.fetchall():
             print("row",row)
-            lst.append(row)
+            lst1.append(row)
+    c=connection.cursor() 
+    c.execute("Select efoodcourt.foodcourt_customer_order.date_ordered from  efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.oid= "+str(oid)+";")
+    for row in c.fetchall():
+            print("row",row)
+            lst2.append(row)
     context={
-        'order_detail':lst
+        'order_detail':lst1,
+        'date':lst2
     }
     return render(request,'orderdetails.html',context)

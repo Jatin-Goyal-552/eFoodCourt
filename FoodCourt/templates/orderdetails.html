@@ -2,8 +2,10 @@
 {% load static %}
 {% block content %}
 <!-- <p>{{order_detail}}</p> -->
-<div style="margin:100px">
-<h2 style="color:hsl(169deg 74% 41% / 83%);font-size:46px;">Delivered at :-</h2>
+<div style="margin-top: 70px;margin-left: 192px;">
+    <h2 style="color:hsl(169deg 74% 41% / 83%);font-size:46px;">Order Date & Time :-</h2>
+    <p>{{date.0.0}}</p>
+<h2 style="color:hsl(169deg 74% 41% / 83%);font-size:46px;">Delivery Address :-</h2>
 <p>Address : {{order_detail.0.1}}</p>
 <p>City : {{order_detail.0.2}}</p>
 <p>State : {{order_detail.0.3}}</p>
@@ -17,7 +19,7 @@
     margin-bottom: 1rem;
     color: #3ea9d2;
     font-size: 25px;
-    margin-left: 200px;
+    margin-left: 400px;
     /* margin-top: 30px; */
 }
 </style>

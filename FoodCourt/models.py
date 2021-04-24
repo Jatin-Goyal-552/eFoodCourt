@@ -25,7 +25,6 @@ class customer_order(models.Model):
     complete = models.BooleanField(default=False)
     ordered = models.BooleanField(default=False)
 
-    # transaction_id = models.CharField(max_length=100, null=True)
     order_amount= models.FloatField(null=True)
     object=models.Manager()
 
