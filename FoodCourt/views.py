@@ -45,9 +45,9 @@ def login(request):
         password=request.POST.get('password')
         customer=Customer.object.filter(user_name=username,password=password)
         print("customer",customer)
-        Content={
-            'customers': customer,
-        }
+        # Content={
+        #     'customers': customer,
+        # }
         global customer_id
         try:
             customer_id=customer[0].cid
@@ -241,16 +241,17 @@ def myorders(request):
         global order_id
         global customer_id
         c=connection.cursor() 
-        c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=1);")
+        # c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=1);")
+        c.execute("select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=1;")
         final=[]
-        lst=[]
+        # lst=[]
         # quantity=[]
         orderno=[]
         for row in c.fetchall():
-            lst.append(row[0])
+            # lst.append(row[0])
             # quantity.append(row[1])
-            orderno.append(row[2])
-        print("lst",lst)
+            orderno.append(row[0])
+        # print("lst",lst)
         print('order',orderno)
         # print(quantity)
         orderno= list(set(orderno))
@@ -300,19 +301,20 @@ def pendingorders(request):
         global order_id
         global customer_id
         c=connection.cursor() 
-        c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=0);")
+        # c.execute("SELECT efoodcourt.foodcourt_food_order.fid_id,efoodcourt.foodcourt_food_order.quantity,efoodcourt.foodcourt_food_order.oid_id FROM efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id in ( select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=0);")
+        c.execute("select efoodcourt.foodcourt_customer_order.oid from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.cid_id="+str(customer_id)+" and efoodcourt.foodcourt_customer_order.complete=0 and efoodcourt.foodcourt_customer_order.ordered=1;")
         final=[]
-        lst=[]
+        # lst=[]
         # quantity=[]
         orderno=[]
         for row in c.fetchall():
-            lst.append(row[0])
+            # lst.append(row[0])
             # quantity.append(row[1])
-            orderno.append(row[2])
-        print("lst",lst)
+            orderno.append(row[0])
+        # print("lst",lst)
         print('order',orderno)
         # print(quantity)
-        orderno= list(set(orderno))
+        # orderno= list(set(orderno))
         for i in orderno:
             order_no=i
             c=connection.cursor() 
