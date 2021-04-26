@@ -19,4 +19,6 @@ urlpatterns = [
 	path('allpendingorders/',views.allpendingorders,name="allpendingorders"),
 	path('delivered/<oid>',views.delivered,name="delivered"),
 	path('viewdetails/<oid>',views.viewdetails,name="viewdetails"),
+	path('additem/<fid>',views.additem,name="additem"),
+	path('removeitem/<fid>',views.removeitem,name="removeitem")
 ]

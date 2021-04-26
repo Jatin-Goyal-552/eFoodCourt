@@ -6,7 +6,7 @@ from django.db import connection
 from django.shortcuts import redirect
 from django.core.files.storage import FileSystemStorage
 from FoodCourt.forms import AddFoodForm
-import time
+# import time
 
 customer_id=None
 order_id=None
@@ -254,7 +254,7 @@ def myorders(request):
         # print("lst",lst)
         print('order',orderno)
         # print(quantity)
-        orderno= list(set(orderno))
+        orderno.sort(reverse=True)
         for i in orderno:
             order_no=i
             c=connection.cursor() 
@@ -315,6 +315,7 @@ def pendingorders(request):
         print('order',orderno)
         # print(quantity)
         # orderno= list(set(orderno))
+
         for i in orderno:
             order_no=i
             c=connection.cursor() 
@@ -534,3 +535,32 @@ def viewdetails(request,oid):
         'date':lst2
     }
     return render(request,'orderdetails.html',context)
+
+def additem(request,fid):
+    global order_id
+    c=connection.cursor() 
+    c.execute("Select quantity from  efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id= "+str(order_id)+" and efoodcourt.foodcourt_food_order.fid_id="+str(fid)+";")
+    for row in c.fetchall():
+            # print("row",row)
+            quantity=row[0]
+    print("quantity",quantity)
+    quantity=quantity+1
+    c=connection.cursor()
+    c.execute("Update efoodcourt.foodcourt_food_order set efoodcourt.foodcourt_food_order.quantity="+str(quantity)+" where efoodcourt.foodcourt_food_order.oid_id= "+str(order_id)+" and efoodcourt.foodcourt_food_order.fid_id="+str(fid)+";")
+    return redirect('cart')
+
+def removeitem(request,fid):
+    global order_id
+    c=connection.cursor() 
+    c.execute("Select quantity from  efoodcourt.foodcourt_food_order where efoodcourt.foodcourt_food_order.oid_id= "+str(order_id)+" and efoodcourt.foodcourt_food_order.fid_id="+str(fid)+";")
+    for row in c.fetchall():
+            # print("row",row)
+            quantity=row[0]
+    print("quantity",quantity)
+    quantity=quantity-1
+    if quantity==0:
+        deletefood(request,fid)
+        return redirect('cart')
+    c=connection.cursor()
+    c.execute("Update efoodcourt.foodcourt_food_order set efoodcourt.foodcourt_food_order.quantity="+str(quantity)+" where efoodcourt.foodcourt_food_order.oid_id= "+str(order_id)+" and efoodcourt.foodcourt_food_order.fid_id="+str(fid)+";")
+    return redirect('cart')
