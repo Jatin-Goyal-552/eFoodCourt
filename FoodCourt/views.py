@@ -294,7 +294,11 @@ def myorders(request):
         return render(request,'myorder.html',context)
     except Exception as e:
         print(e)
-        return HttpResponse("<h1>You do not have any previous order.......Please order something</h1>")
+        context={'orders':None,
+            'quantity':None,
+            'total':None,
+            'number':None}
+        return render(request,'myorder.html',context)
 
 def pendingorders(request):
     try:
@@ -352,7 +356,11 @@ def pendingorders(request):
 
         return render(request,'pendingorders.html',context)
     except:
-        return HttpResponse("<h1>You do not have any pending order.......Please order something</h1>")
+        context={'orders':None,
+            'quantity':None,
+            'total':None,
+            'number':None}
+        return render(request,'pendingorders.html',context)
 
 def add_food(request):
     if request.method=='POST':
@@ -397,7 +405,7 @@ def add_food(request):
 def allorders(request):
     global admin_id
     c=connection.cursor() 
-    c.execute("select efoodcourt.foodcourt_customer_order.oid,efoodcourt.foodcourt_customer_order.cid_id from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.complete=1;")
+    c.execute("select efoodcourt.foodcourt_customer_order.oid,efoodcourt.foodcourt_customer_order.cid_id from efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.complete=1 order by date_ordered desc;")
     ono=[]
     cno=[]
     final=[]
@@ -516,7 +524,7 @@ def delivered(request,oid):
     c.execute("update efoodcourt.foodcourt_customer_order set efoodcourt.foodcourt_customer_order.complete= 1 where efoodcourt.foodcourt_customer_order.oid="+str(oid)+";")
     return redirect('allpendingorders')
 
-def viewdetails(request,oid):
+def viewdetailscustomer(request,oid):
     print("oid",oid)
     lst1=[]
     lst2=[]
@@ -534,7 +542,27 @@ def viewdetails(request,oid):
         'order_detail':lst1,
         'date':lst2
     }
-    return render(request,'orderdetails.html',context)
+    return render(request,'orderdetailscustomer.html',context)
+
+def viewdetailsadmin(request,oid):
+    print("oid",oid)
+    lst1=[]
+    lst2=[]
+    c=connection.cursor() 
+    c.execute("Select * from  efoodcourt.foodcourt_order_delivery where efoodcourt.foodcourt_order_delivery.oid_id= "+str(oid)+";")
+    for row in c.fetchall():
+            print("row",row)
+            lst1.append(row)
+    c=connection.cursor() 
+    c.execute("Select efoodcourt.foodcourt_customer_order.date_ordered from  efoodcourt.foodcourt_customer_order where efoodcourt.foodcourt_customer_order.oid= "+str(oid)+";")
+    for row in c.fetchall():
+            print("row",row)
+            lst2.append(row)
+    context={
+        'order_detail':lst1,
+        'date':lst2
+    }
+    return render(request,'orderdetailsadmin.html',context)
 
 def additem(request,fid):
     global order_id

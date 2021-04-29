@@ -18,7 +18,8 @@ urlpatterns = [
 	path('allorders/',views.allorders,name="allorders"),
 	path('allpendingorders/',views.allpendingorders,name="allpendingorders"),
 	path('delivered/<oid>',views.delivered,name="delivered"),
-	path('viewdetails/<oid>',views.viewdetails,name="viewdetails"),
+	path('viewdetailscustomer/<oid>',views.viewdetailscustomer,name="viewdetailscustomer"),
+	path('viewdetailsadmin/<oid>',views.viewdetailsadmin,name="viewdetailsadmin"),
 	path('additem/<fid>',views.additem,name="additem"),
 	path('removeitem/<fid>',views.removeitem,name="removeitem")
 ]
