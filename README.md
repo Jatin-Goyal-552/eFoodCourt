@@ -12,7 +12,7 @@ orders that are not delivered yet.</h3>
 <img src="schema_diagram.png"></img>
 <p></p>
 <p></p>
-<h2>Interface</h2>
+<h1>Interface :-</h1>
 <img src="Demo/sign_up.jpg"></img>
 <img src="Demo/login.jpg"></img>
 <img src="Demo/menu.jpg"></img>
